@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,10 +16,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
+
+import pl.wojtek.jsonproject.json.GitHubUser;
 
 /**
  * Created by user on 2014-11-09.
@@ -24,29 +31,24 @@ import java.util.List;
 public class GitHubUserAdapter extends ArrayAdapter {
 
     private Activity context;
-    private List<GsonActivity.GitHubUser> list;
+    private List<GitHubUser> list;
     public GitHubUserAdapter(Activity context, int resource, List objects) {
         super(context, resource,objects);
         this.context=context;
         this.list=objects;
     }
 
-
-
-
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view=convertView;
         ViewHolder viewHolder;
-        final GsonActivity.GitHubUser gitHubUser= this.list.get(position);
+        final GitHubUser gitHubUser=this.list.get(position);
         if(convertView==null){
-
             LayoutInflater layoutInflater=context.getLayoutInflater();
             view= layoutInflater.inflate(R.layout.single_githubuser,null);
             viewHolder=new ViewHolder();
             viewHolder.textView=(TextView)view.findViewById(R.id.userNameTextView);
-            viewHolder.textView.setText(gitHubUser.name);
+            viewHolder.textView.setText(gitHubUser.getName());
             viewHolder.imageView=(ImageView)view.findViewById(R.id.avatarImageView);
 
             view.setTag(viewHolder);
@@ -56,8 +58,11 @@ public class GitHubUserAdapter extends ArrayAdapter {
 
 
 
-        viewHolder.textView.setText(gitHubUser.name);
-        loadAvatar(viewHolder, gitHubUser);
+        viewHolder.textView.setText(gitHubUser.getName());
+        Picasso.with(context).load(gitHubUser.getAvatar_url()).into(viewHolder.imageView);
+
+       // loadAvatar(viewHolder, gitHubUser);
+
 
 
 
@@ -65,9 +70,10 @@ public class GitHubUserAdapter extends ArrayAdapter {
         return view;
     }
 
-    private void loadAvatar(ViewHolder viewHolder, GsonActivity.GitHubUser gitHubUser) {
+    private void loadAvatar(ViewHolder viewHolder, GitHubUser gitHubUser) {
         BitmapAsyncDowloader bitmapAsyncDowloader=new BitmapAsyncDowloader(viewHolder.imageView);
-        bitmapAsyncDowloader.execute(gitHubUser.avatar_url);
+        bitmapAsyncDowloader.execute(gitHubUser.getAvatar_url());
+
     }
 
     private class ViewHolder {
@@ -87,16 +93,30 @@ public class GitHubUserAdapter extends ArrayAdapter {
 
         @Override
         protected Void doInBackground(String... params) {
-            bitmap=getRandomImage(params[0]);
+            bitmap= getAvatarImage(params[0]);
             return null;
         }
 
+
+
         @Override
         protected void onPostExecute(Void aVoid) {
-            this.imageView.setImageBitmap(bitmap);
+
+            Drawable[] layers = new Drawable[2];
+            if(imageView.getDrawable() != null)
+                layers[0] = imageView.getDrawable();
+            else
+                layers[0] = new BitmapDrawable(context.getResources(), bitmap);
+
+            layers[1] = new BitmapDrawable(context.getResources(), bitmap);
+
+            TransitionDrawable transitionDrawable = new TransitionDrawable(layers);
+            imageView.setImageDrawable(transitionDrawable);
+            transitionDrawable.startTransition(500);
+
         }
 
-        private Bitmap getRandomImage(String imageUrl) {
+        private Bitmap getAvatarImage(String imageUrl) {
             Bitmap bm = null;
 
 
