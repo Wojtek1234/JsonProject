@@ -33,7 +33,7 @@ public class GsonActivity extends Activity {
 
     private void requestApi() {
         ApiRequestAsyncTask apiRequestAsyncTask = new ApiRequestAsyncTask();
-        apiRequestAsyncTask.requestUrl = "https://api.github.com/users/dondimas/following";
+        apiRequestAsyncTask.requestUrl = "https://api.github.com/users/JakeWharton/following";
         apiRequestAsyncTask.execute();
 
     }
