@@ -10,7 +10,7 @@ public class GitHubRepo {
     @SerializedName("owner")
     GitHubUser user;
 
-    @SerializedName("String")
+    @SerializedName("name")
     String repoNamne;
 
     @SerializedName("url")
