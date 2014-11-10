@@ -12,15 +12,16 @@ import java.util.List;
 /**
  * Created by user on 2014-11-09.
  */
-public class GSONparser<T> {
+public abstract class GSONparser<T> {
 
 
-    private List<T> parseGitHubUserList(InputStream content) {
+
+    public List<T> parseGitHub(InputStream content) {
         Gson gson = new Gson();
-        Type collectionType = new TypeToken<List<T>>(){}.getType();
+        Type collectionType = new TypeToken<List<T>>() {
+        }.getType();
         Reader jsonReader = new InputStreamReader(content);
-        List<T> result = gson.fromJson(jsonReader, collectionType);
-        return result;
+        return gson.fromJson(jsonReader, collectionType);
     }
 
 }

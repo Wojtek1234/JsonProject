@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import pl.wojtek.jsonproject.json.GitHubUser;
+import pl.wojtek.jsonproject.json.GsonUserParser;
 
 
 public class GsonActivity extends Activity {
@@ -86,7 +87,8 @@ public class GsonActivity extends Activity {
 
                 HttpResponse response = httpClient.execute(new HttpGet(requestUrl));
                 InputStream stream = response.getEntity().getContent();
-                listaGithubow=(List<GitHubUser>)parseGitHubUserList(stream);
+                GsonUserParser gsonUserParser=new GsonUserParser();
+                listaGithubow=gsonUserParser.parseGitHub(stream);
 
             } catch (IOException e) {
                 e.printStackTrace();
